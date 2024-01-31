@@ -145,7 +145,6 @@ app.post('/api/fundwallet', async (req, res) => {
       }
     );
 
-    // Add a new entry to the transaction array for the deposit
     await User.updateOne(
       { email: email },
       {
@@ -171,7 +170,6 @@ app.post('/api/fundwallet', async (req, res) => {
       // ... other response details
     });
   } catch (error) {
-    // Handle errors and send an error response
     console.log(error);
     res.json({ status: 'error' });
   }
