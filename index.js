@@ -5,6 +5,8 @@ const dotenv = require('dotenv')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+const path = require('path');
+var serveStatic = require('serve-static')
 const saltRounds = 10; 
 app.use(cors())
 app.use(express.json())
@@ -14,6 +16,34 @@ const User = require('./models/user.model')
 const dbURI = process.env.MONGODB_URI;
 
 mongoose.connect(dbURI);
+
+app.use(serveStatic(path.join(process.cwd(), 'client', 'build')));
+
+const clientSideRoutes = [
+  '/',
+  '/dashboard',
+  '/myprofile',
+  '/login',
+  '/register',
+  '/withdraw',
+  '/plans',
+  '/referrals',
+  '/admin',
+  '/irainvest',
+  '/invest',
+  '/fundwallet',
+  '/transactions',
+  '/investments',
+  '/deposit',
+  '/checkout',
+  '/withdrawlogs',
+];
+
+app.get(clientSideRoutes, (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'client', 'build', 'index.html'));
+});
+
+app.use('/static', express.static(path.join(process.cwd(), 'client', 'build', 'static')));
 
 app.post('/api/register', async (req, res) => {
   console.log(req.body);
