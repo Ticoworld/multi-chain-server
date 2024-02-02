@@ -60,6 +60,7 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ status: 'error', message: 'Confirm password must be the same as password.' });
     }
 
+
   
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -147,12 +148,15 @@ app.post('/api/fundwallet', async (req, res) => {
 
     // Find the user by email
     const user = await User.findOne({ email: email });
+    const highestId = user.deposit.reduce((maxId, entry) => Math.max(maxId, entry.id), 0);
 
     // Update user's funded, capital, and totaldeposit fields
+    const tranId = highestId + 1
     await User.updateOne(
       { email: email },
       {
         $set: {
+          id:newId,
           funded: incomingAmount + user.funded,
           capital: user.capital + incomingAmount,
           totaldeposit: user.totaldeposit + incomingAmount,
@@ -161,12 +165,13 @@ app.post('/api/fundwallet', async (req, res) => {
     );
 
     // Add a new entry to the deposit array
+    const newId = highestId + 1;
     await User.updateOne(
       { email: email },
       {
         $push: {
           deposit: {
-            id: 1,
+            id: newId,
             date: new Date().toLocaleString(),
             amount: incomingAmount,
             balance: incomingAmount + user.funded,
